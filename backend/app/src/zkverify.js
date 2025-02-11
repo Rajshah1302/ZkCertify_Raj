@@ -14,7 +14,7 @@ async function verify(proof, publicSignals) {
 
   const ETH_ZKVERIFY_CONTRACT_ADDRESS =
     "0x2C0d06342BA9c7FD7BE164A6eE73beBACeDb6dF4";
-  const ETH_CGPA_CONTRACT_ADDRESS =
+  const ETH_SCORE_CONTRACT_ADDRESS =
     "0x28d868c3B32Bc3e7a08dA73D94c547E2127c44D7";
   const ZKV_SEED_PHRASE =
     "winner stamp fabric because gallery embody oyster achieve resemble bullet business fee";
@@ -124,13 +124,13 @@ async function verify(proof, publicSignals) {
     const abiZkvContract = [
       "event AttestationPosted(uint256 indexed attestationId, bytes32 indexed root)",
     ];
-    // Updated ABI for CGPA contract (without verificationCommitment)
-    const abiCGPAContract = [
+    // Updated ABI for SCORE contract (without verificationCommitment)
+    const abiSCOREContract = [
       // Constructor.
       "constructor(address _zkvContract, bytes32 _vkHash, uint256 _scoreThreshold)",
 
       // Updated main verification function.
-      "function verifyScore(uint256 attestationId, uint256 root, uint256 cgpa, bytes32[] merklePath, uint256 leafCount, uint256 index)",
+      "function verifyScore(uint256 attestationId, uint256 root, uint256 SCORE, bytes32[] merklePath, uint256 leafCount, uint256 index)",
 
       // Events.
       "event ScoreVerified(address indexed student)",
@@ -150,12 +150,12 @@ async function verify(proof, publicSignals) {
       provider
     );
     console.log("ZKV Contract:", zkvContract);
-    const cgpaContract = new ethers.Contract(
-      ETH_CGPA_CONTRACT_ADDRESS,
-      abiCGPAContract,
+    const SCOREContract = new ethers.Contract(
+      ETH_SCORE_CONTRACT_ADDRESS,
+      abiSCOREContract,
       wallet
     );
-    console.log("Score Contract:", cgpaContract);
+    console.log("Score Contract:", SCOREContract);
 
     const filterAttestationsById = zkvContract.filters.AttestationPosted(
       attestationId,
@@ -175,6 +175,7 @@ async function verify(proof, publicSignals) {
       console.error("An error occurred during the transaction:", error);
     });
 
+
     return new Promise(async (resolve, reject) => {
       console.log("Entered Promise");
       // Listen for the attestation event from zkVerify.
@@ -182,7 +183,7 @@ async function verify(proof, publicSignals) {
         try {
           console.log("Attestation event received from zkVerify");
           // Call the contract's verifyScore function.
-          const txResponse = await cgpaContract.verifyScore(
+          const txResponse = await SCOREContract.verifyScore(
             attestationId,
             root,
             merkleProof,
@@ -200,9 +201,9 @@ async function verify(proof, publicSignals) {
         }
       });
 
-      const filterCGPAEventsByCaller =
-        cgpaContract.filters.ScoreVerified(evmAccount);
-      cgpaContract.once(filterCGPAEventsByCaller, async () => {
+      const filterSCOREEventsByCaller =
+        SCOREContract.filters.ScoreVerified(evmAccount);
+      SCOREContract.once(filterSCOREEventsByCaller, async () => {
         console.log("Score verification successful!");
         resolve(true);
       });
