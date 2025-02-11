@@ -5,7 +5,7 @@ const { generateProof } = require("../src/generateProof");
 const { verify } = require("../src/zkverify");
 const router = express.Router();
 
-const CGPA_THRESHOLD = 700;
+const SCORE_THRESHOLD = 1400;
 const verificationResultsPath = "../verificationResults.json";
 
 if (!fs.existsSync(verificationResultsPath)) {
@@ -25,7 +25,7 @@ router.post("/", async (req, res) => {
     console.log("Step 1: Generating proof...");
     const { proof, publicSignals } = await generateProof(
       studentId,
-      CGPA_THRESHOLD
+      SCORE_THRESHOLD
     );
 
     console.log("Step 2: Verifying proof...");

@@ -15,7 +15,7 @@ async function verify(proof, publicSignals) {
   const ETH_ZKVERIFY_CONTRACT_ADDRESS =
     "0x2C0d06342BA9c7FD7BE164A6eE73beBACeDb6dF4";
   const ETH_CGPA_CONTRACT_ADDRESS =
-    "0x2bf9C83a5d5Dc713235D4D8E47fD7D1A58c01de3";
+    "0x28d868c3B32Bc3e7a08dA73D94c547E2127c44D7";
   const ZKV_SEED_PHRASE =
     "winner stamp fabric because gallery embody oyster achieve resemble bullet business fee";
 
@@ -43,7 +43,7 @@ async function verify(proof, publicSignals) {
     console.log(proof);
 
     const vk = JSON.parse(
-      fs.readFileSync(`../../circuit/setup/verification_key.json`)
+      fs.readFileSync(`/home/nightfury69/Downloads/ZkCertify/backend/circuit/setup/verification_key.json`)
     );
 
     // Establish zkVerify session.
