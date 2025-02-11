@@ -4,6 +4,8 @@ import { Stats } from "@/components/stats"
 import { ProjectDetails } from "@/components/project-details"
 import { ProfileSection } from "@/components/profile-section"
 import { ContactForm } from "@/components/contact-form"
+import { Footer } from "@/components/footer"
+import {  ProfilePage } from "@/components/profile"
 
 export default function Home() {
   return (
@@ -14,6 +16,7 @@ export default function Home() {
       <ProjectDetails />
       <ProfileSection />
       <ContactForm />
+      <Footer />
     </main>
   )
 }
