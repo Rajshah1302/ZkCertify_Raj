@@ -6,15 +6,7 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 
-// Load the student records JSON.
-// Expected structure:
-// {
-//   "students": [
-//      { "id": "student1", "cgpa": 8.5 },
-//      { "id": "student2", "cgpa": 7.2 },
-//      ...
-//   ]
-// }
+
 const { students } = require(`../studentRecords.json`);
 
 /**
@@ -135,26 +127,21 @@ async function buildLeafHash(student, poseidon) {
  * by hashing the raw student record.
  */
 async function generateStudentMerkleTree() {
-    // Build optimized Poseidon.
     const poseidon = await circomlibjs.buildPoseidonOpt();
 
-    // Define the leaf hash function.
-    // We wrap buildLeafHash to synchronously return a hash.
-    // Since our poseidon hash function is synchronous once built,
-    // we can define leafHash as follows:
+    // Updated leaf hash function: combine CGPA and testScore.
     const hashStudentLeaf = (student) => {
-        // student is an object: { id: string, cgpa: number }
-        return poseidon([ getStudentIDHash(student.id), BigInt(Math.floor(student.cgpa * 100)) ]);
+        const scaledCGPA = BigInt(Math.floor(student.cgpa * 100));
+        const studentTestScore = BigInt(student.testScore);
+        const weight = BigInt(10);
+        const finalScore = scaledCGPA + (studentTestScore * weight);
+        return poseidon([ getStudentIDHash(student.id), finalScore ]);
     };
 
-    // Define the internal node hash function.
     const hashInternalNode = (left, right) => poseidon([left, right]);
 
-    // Set the tree depth (for example, 10 gives 1024 leaves).
     const treeDepth = 10;
     const maxLeaves = 2 ** treeDepth;
-    // Create the leaves array; pad with the last student record if necessary.
-    // **Note:** We now pass raw student objects rather than pre-hashed leaves.
     const leaves = Array.from({ length: maxLeaves }, (_, index) => {
         if (index < students.length) {
             console.log(`Processing student ${index + 1}: ${students[index].id}`);
@@ -165,8 +152,6 @@ async function generateStudentMerkleTree() {
     });
 
     console.log(`Total students: ${students.length}. Total leaves (with padding): ${leaves.length}.`);
-
-    // Build the Merkle tree.
     const merkleTreeInstance = await merkleTree(leaves, hashStudentLeaf, hashInternalNode);
     const merkleRoot = poseidon.F.toString(merkleTreeInstance.getRoot());
     console.log("Merkle Tree Root:", merkleRoot);
@@ -185,46 +170,39 @@ async function generateStudentMerkleTree() {
  * @returns {Object} Proof and public signals.
  */
 async function generateProof(studentId, threshold) {
-    // Look up the student in the records.
     const studentIndex = students.findIndex(student => student.id === studentId);
     if (studentIndex === -1) {
         throw new Error(`Student with id ${studentId} not found.`);
     }
     const studentRecord = students[studentIndex];
 
-    // Build the Merkle tree.
     const { merkleTreeInstance, poseidon } = await generateStudentMerkleTree();
     const merkleRoot = poseidon.F.toString(merkleTreeInstance.getRoot());
 
-    // Compute the studentIDHash and scaled CGPA.
     const studentIDHash = getStudentIDHash(studentRecord.id);
     const scaledCGPA = BigInt(Math.floor(studentRecord.cgpa * 100));
+    const studentTestScore = BigInt(studentRecord.testScore);
     const thresholdBigInt = BigInt(Math.floor(threshold));
 
-    // Generate the Merkle proof for the student’s leaf.
     const proofData = merkleTreeInstance.getMerkleProof(studentIndex);
-    // The circuit expects authPath to have treeDepth+2 elements:
-    // [leaf, intermediate nodes..., root]
     const authPath = proofData.lemma.map(x => poseidon.F.toString(x));
 
-    // Prepare the circuit inputs.
+    // Pass the test score as an additional private input.
     const circuitInputs = {
-        // Public inputs.
         merkleRoot: BigInt(merkleRoot),
         threshold: thresholdBigInt,
-        // Private inputs.
         studentIndex: BigInt(studentIndex),
         authPath: authPath.map(x => BigInt(x)),
         studentIDHash: studentIDHash,
-        studentCGPA: scaledCGPA
+        studentCGPA: scaledCGPA,
+        studentTestScore: studentTestScore
     };
 
     console.log("Circuit Inputs:", circuitInputs);
 
     // Set the paths to the compiled circuit’s WASM and zkey files.
-    // Adjust these paths to your project structure.
-    const wasmPath = `../../circuit/setup/circuit.wasm`;
-    const zkeyPath = `../../circuit/setup/circuit_final.zkey`;
+    const wasmPath = `/home/nightfury69/Downloads/ZkCertify/backend/circuit/setup/circuit.wasm`;
+    const zkeyPath = `/home/nightfury69/Downloads/ZkCertify/backend/circuit/setup/circuit_final.zkey`;
     console.log("Using WASM Path:", wasmPath);
     console.log("Using ZKey Path:", zkeyPath);
 

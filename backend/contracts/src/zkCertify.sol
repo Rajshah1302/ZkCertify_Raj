@@ -1,52 +1,51 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
-contract zkCGPA {
+contract zkCertify {
     // Declare the proving system ID constant.
     bytes32 public constant PROVING_SYSTEM_ID = keccak256(abi.encodePacked("groth16"));
 
     // Immutable variables set on deployment.
     address public immutable zkvContract;
     bytes32 public immutable vkHash;
-    uint256 public immutable cgpaThreshold;
+    // This threshold represents the minimum required combined score (e.g. CGPA plus tech test weight).
+    uint256 public immutable scoreThreshold;
 
-    // Track verified students.
-    mapping(address => bool) public hasVerifiedCGPA;
-    // Prevent replay attacks (using a computed nullifier).
+    // Track verified candidates.
+    mapping(address => bool) public hasVerifiedScore;
+    // Prevent replay attacks using a computed nullifier.
     mapping(uint256 => bool) public usedProofs;
 
     // Events for logging verification.
-    event CGPAVerified(address indexed student);
+    event ScoreVerified(address indexed candidate);
     event ThresholdMet();
 
     constructor(
         address _zkvContract, 
         bytes32 _vkHash,
-        uint256 _cgpaThreshold
+        uint256 _scoreThreshold
     ) {
         zkvContract = _zkvContract;
         vkHash = _vkHash;
-        cgpaThreshold = _cgpaThreshold;
+        scoreThreshold = _scoreThreshold;
     }
 
     /**
-     * @notice Verifies that the student's CGPA (as proven off-chain) meets the threshold.
+     * @notice Verifies that the candidate's combined score (as proven off-chain) meets the threshold.
+     * The proof attests that the candidate's secret data (e.g. CGPA and tech test score) yield a combined score above the threshold.
      * @param attestationId The attestation ID from zkVerify.
      * @param root The Merkle tree root.
-     * @param cgpa The student's CGPA (scaled as in the off-chain computation).
      * @param merklePath The Merkle proof path.
      * @param leafCount The total number of leaves in the Merkle tree.
-     * @param index The index of the student leaf in the tree.
+     * @param index The index of the candidate's leaf in the tree.
      */
-    function verifyCGPA(
+    function verifyScore(
         uint256 attestationId,
         uint256 root, 
         bytes32[] calldata merklePath,
         uint256 leafCount,
         uint256 index
     ) external {
-        // Check that the provided CGPA meets the threshold requirement.
-
         // Generate a nullifier from msg.sender and attestationId to prevent replays.
         uint256 nullifier = uint256(keccak256(abi.encodePacked(
             msg.sender,
@@ -64,13 +63,13 @@ contract zkCGPA {
                 leafCount,
                 index
             ),
-            "CGPA proof verification failed"
+            "Score proof verification failed"
         );
 
-        // Mark the sender as having verified their CGPA.
-        hasVerifiedCGPA[msg.sender] = true;
+        // Mark the sender as having verified their score.
+        hasVerifiedScore[msg.sender] = true;
 
-        emit CGPAVerified(msg.sender);
+        emit ScoreVerified(msg.sender);
         emit ThresholdMet();
     }
 
