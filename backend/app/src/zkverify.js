@@ -127,21 +127,20 @@ async function verify(proof, publicSignals) {
     // Updated ABI for CGPA contract (without verificationCommitment)
     const abiCGPAContract = [
       // Constructor.
-      "constructor(address _zkvContract, bytes32 _vkHash, uint256 _cgpaThreshold)",
+      "constructor(address _zkvContract, bytes32 _vkHash, uint256 _scoreThreshold)",
 
       // Updated main verification function.
-      "function verifyCGPA(uint256 attestationId, uint256 root, uint256 cgpa, bytes32[] merklePath, uint256 leafCount, uint256 index)",
+      "function verifyScore(uint256 attestationId, uint256 root, uint256 cgpa, bytes32[] merklePath, uint256 leafCount, uint256 index)",
 
       // Events.
-      "event CGPAVerified(address indexed student)",
+      "event ScoreVerified(address indexed student)",
       "event ThresholdMet()",
 
       // View functions.
       "function PROVING_SYSTEM_ID() view returns (bytes32)",
-      "function cgpaThreshold() view returns (uint256)",
+      "function scoreThreshold() view returns (uint256)",
       "function vkHash() view returns (bytes32)",
       "function zkvContract() view returns (address)",
-      "function hasVerifiedCGPA(address) view returns (bool)",
       "function usedProofs(uint256) view returns (bool)",
     ];
 
@@ -156,7 +155,7 @@ async function verify(proof, publicSignals) {
       abiCGPAContract,
       wallet
     );
-    console.log("CGPA Contract:", cgpaContract);
+    console.log("Score Contract:", cgpaContract);
 
     const filterAttestationsById = zkvContract.filters.AttestationPosted(
       attestationId,
@@ -182,8 +181,8 @@ async function verify(proof, publicSignals) {
       zkvContract.once(filterAttestationsById, async (_id, _root) => {
         try {
           console.log("Attestation event received from zkVerify");
-          // Call the contract's verifyCGPA function.
-          const txResponse = await cgpaContract.verifyCGPA(
+          // Call the contract's verifyScore function.
+          const txResponse = await cgpaContract.verifyScore(
             attestationId,
             root,
             merkleProof,
@@ -196,15 +195,15 @@ async function verify(proof, publicSignals) {
             `Transaction sent to EVM, tx-hash ${receipt.transactionHash}`
           );
         } catch (txError) {
-          console.error("Error in verifyCGPA:", txError);
+          console.error("Error in verifyScore:", txError);
           reject(txError);
         }
       });
 
       const filterCGPAEventsByCaller =
-        cgpaContract.filters.CGPAVerified(evmAccount);
+        cgpaContract.filters.ScoreVerified(evmAccount);
       cgpaContract.once(filterCGPAEventsByCaller, async () => {
-        console.log("CGPA verification successful!");
+        console.log("Score verification successful!");
         resolve(true);
       });
     });
