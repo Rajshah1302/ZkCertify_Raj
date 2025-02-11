@@ -4,7 +4,6 @@ const circomlibjs = require("circomlibjs");
 const snarkjs = require("snarkjs");
 const fs = require("fs");
 const path = require("path");
-const appRoot = require("app-root-path");
 const crypto = require("crypto");
 
 // Load the student records JSON.
@@ -16,7 +15,7 @@ const crypto = require("crypto");
 //      ...
 //   ]
 // }
-const { students } = require(`${appRoot}/studentRecords.json`);
+const { students } = require(`../studentRecords.json`);
 
 /**
  * Build a Merkle tree from an array of leaves.
@@ -224,9 +223,8 @@ async function generateProof(studentId, threshold) {
 
     // Set the paths to the compiled circuit’s WASM and zkey files.
     // Adjust these paths to your project structure.
-    const appRootPath = appRoot.path;
-    const wasmPath = `${appRootPath}/../circuit/setup/circuit.wasm`;
-    const zkeyPath = `${appRootPath}/../circuit/setup/circuit_final.zkey`;
+    const wasmPath = `../../circuit/setup/circuit.wasm`;
+    const zkeyPath = `../../circuit/setup/circuit_final.zkey`;
     console.log("Using WASM Path:", wasmPath);
     console.log("Using ZKey Path:", zkeyPath);
 
