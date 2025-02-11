@@ -19,14 +19,13 @@ export function Hero() {
           className="max-w-3xl mx-auto text-center"
         >
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-cyber-blue via-cyber-purple to-cyber-pink bg-clip-text text-transparent">
-            Welcome to the Future of Web3
+            ZkCertify: Verifiable Resume Credentials
           </h1>
           <p className="text-lg sm:text-xl mb-8 text-muted-foreground">
-            Explore the decentralized world with our cutting-edge platform. Connect, create, and collaborate in ways
-            never before possible.
+            Empower your career with tamper-proof certifications. ZkCertify uses cutting-edge zero-knowledge proofs to verify and certify your resume data without compromising your privacy—making hiring and recruiting more transparent and trustworthy.
           </p>
           <Button size="lg" className="bg-gradient-to-r from-cyber-blue to-cyber-purple hover:opacity-90 text-white">
-            Start Exploring
+            Get Certified
           </Button>
         </motion.div>
       </div>
@@ -61,4 +60,3 @@ export function Hero() {
     </section>
   )
 }
-
