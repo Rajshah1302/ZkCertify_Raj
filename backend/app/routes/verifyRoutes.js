@@ -2,9 +2,9 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const { generateProof } = require("../src/generateProof");
+const { sendAttestation } = require("../src/sendAttestation");
 const { verify } = require("../src/zkverify");
 const router = express.Router();
-const { } = reuire("")
 const SCORE_THRESHOLD = 1400;
 const verificationResultsPath = "../verificationResults.json";
 
@@ -44,7 +44,14 @@ router.post("/", async (req, res) => {
     fs.writeFileSync(verificationResultsPath, JSON.stringify(results, null, 2));
 
     console.log("Verification completed successfully!");
-    res.json({ success: true, verificationHash: publicSignals[2] || "N/A" });
+    console.log("Sending attestation data...");
+    const attestationPath = path.join(__dirname, "../../attestation.json");
+    if (!fs.existsSync(attestationPath)) {
+      throw new Error("attestation.json file not found");
+    }
+    const attestationData = JSON.parse(fs.readFileSync(attestationPath, "utf8"));
+    const receipt = await sendAttestation(attestationData);
+    res.json({ success: true, receipt: receipt.hash });
   } catch (error) {
     console.error("Verification failed:", error);
     res.status(400).json({ success: false, error: error.message });

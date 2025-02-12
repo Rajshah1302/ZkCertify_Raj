@@ -2,7 +2,7 @@ const { ethers } = require("ethers");
 
 // Replace with your Infura endpoint and your secret key (ideally via environment variables)
 const INFURA_URL = process.env.INFURA_URL || "https://sepolia.infura.io/v3/8bc20953225e4a40a8130f1d54c7e5ec";
-const ETH_SECRET_KEY = process.env.ETH_SECRET_KEY;
+const ETH_SECRET_KEY = "0xc5bbc52585e112afddbd3cdc271e8c87c4a959e4a24994d7f9438a859edea9d0";
 const ETH_SCORE_CONTRACT_ADDRESS = "0xd301Af1BE2852340389607298281b497F7f41fb2";
 
 // Define the ABI fragment for the ScoreVerify function
