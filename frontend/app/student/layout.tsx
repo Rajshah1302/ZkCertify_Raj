@@ -2,6 +2,9 @@
 import { Bell } from "lucide-react"
 import { SidebarNav } from "../__components/student/SideBar"
 import { Button } from "@/components/ui/button"
+import { Wallet, BadgeCheckIcon as Verify, Book } from "lucide-react";
+import { useWeb3 } from "@/providers/web3-provider";
+
 import type React from "react" // Import React
 
 export default function RootLayout({
@@ -9,6 +12,8 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const { account, connectWallet, disconnectWallet, isConnecting } = useWeb3();
+
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
@@ -25,12 +30,16 @@ export default function RootLayout({
         <header className="flex h-16 items-center justify-between border-b px-6">
           <div className="flex-1" />
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon">
-              <Bell className="h-5 w-5" />
-            </Button>
-            <Button variant="outline">Disconnect</Button>
-            <span className="text-sm text-muted-foreground">0x720f...698b</span>
-          </div>
+          <Button
+              onClick={account ? disconnectWallet : connectWallet}
+              disabled={isConnecting}
+              className="bg-gradient-to-r from-cyber-blue to-cyber-purple hover:opacity-90 text-white"
+            >
+              <Wallet className="mr-2 h-4 w-4" />
+              {account
+                ? `${account.slice(0, 6)}...${account.slice(-4)}`
+                : "Connect Wallet"}
+            </Button> </div>
         </header>
         {children}
       </div>

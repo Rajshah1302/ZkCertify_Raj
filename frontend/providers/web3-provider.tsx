@@ -2,27 +2,16 @@
 
 import { createContext, useContext, useEffect, useState } from "react"
 import { ethers } from "ethers"
-import { Web3Auth } from "@web3auth/modal"
-import { CHAIN_NAMESPACES, IProvider } from "@web3auth/base"
-import { OpenloginAdapter } from "@web3auth/openlogin-adapter"
 
-const SUPPORTED_NETWORKS = {
-  opencampus: {
-    chainId: "0x2710", // 10000 in decimal
-    displayName: "Open Campus Testnet",
-    rpcTarget: "https://testnet.edu.ethereumws.com",
-    blockExplorer: "https://testnet.eduversescan.io",
-    ticker: "EDU",
-    tickerName: "EDU",
-  },
-  arbitrumTestnet: {
-    chainId: "0x66EEE", // 421613 in decimal
-    displayName: "Arbitrum Sepolia",
-    rpcTarget: "https://sepolia-rollup.arbitrum.io/rpc",
-    blockExplorer: "https://sepolia.arbiscan.io",
-    ticker: "ETH",
-    tickerName: "ETH",
-  },
+declare global {
+  interface Window {
+    ethereum?: {
+      isMetaMask?: true
+      request: (...args: any[]) => Promise<any>
+      on: (event: string, callback: (...args: any[]) => void) => void
+      removeListener: (event: string, callback: (...args: any[]) => void) => void
+    }
+  }
 }
 
 interface Web3ContextType {
@@ -31,8 +20,8 @@ interface Web3ContextType {
   disconnectWallet: () => Promise<void>
   isConnecting: boolean
   chainId: number | null
-  web3auth: Web3Auth | null
-  provider: IProvider | null
+  provider: ethers.BrowserProvider | null
+  isMetaMaskAvailable: boolean
 }
 
 const Web3Context = createContext<Web3ContextType>({
@@ -41,100 +30,80 @@ const Web3Context = createContext<Web3ContextType>({
   disconnectWallet: async () => {},
   isConnecting: false,
   chainId: null,
-  web3auth: null,
   provider: null,
+  isMetaMaskAvailable: false,
 })
-const clientId ="BKIBlAyPdcCrCDvrqd0G1ADyl9jcJM1t6fcmxuuZY9xr81RW7hZD-BavrSOXX7J51ieFwSk6LfsCAH1QfON92PM"
 
 export function Web3Provider({ children }: { children: React.ReactNode }) {
-  const [web3auth, setWeb3auth] = useState<Web3Auth | null>(null)
-  const [provider, setProvider] = useState<IProvider | null>(null)
+  const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null)
   const [account, setAccount] = useState<string | null>(null)
   const [isConnecting, setIsConnecting] = useState(false)
   const [chainId, setChainId] = useState<number | null>(null)
+  const [isMetaMaskAvailable, setIsMetaMaskAvailable] = useState(false)
 
   useEffect(() => {
-    const init = async () => {
-      try {
-        // IMPORTANT: Replace "YOUR_CLIENT_ID" with your actual client ID from Web3Auth Dashboard
-        const web3authInstance = new Web3Auth({
-          authConfig: {
-            clientId,
-          },
-          web3AuthNetwork: "testnet",
-          chainConfig: {
-            chainNamespace: CHAIN_NAMESPACES.EIP155,
-            chainId: SUPPORTED_NETWORKS.opencampus.chainId,
-            rpcTarget: SUPPORTED_NETWORKS.opencampus.rpcTarget,
-            displayName: SUPPORTED_NETWORKS.opencampus.displayName,
-            blockExplorer: SUPPORTED_NETWORKS.opencampus.blockExplorer,
-            ticker: SUPPORTED_NETWORKS.opencampus.ticker,
-            tickerName: SUPPORTED_NETWORKS.opencampus.tickerName,
-          },
-        })
+    if (typeof window === 'undefined') return
 
-        const openloginAdapter = new OpenloginAdapter({
-          adapterSettings: {
-            network: "testnet",
-            uxMode: "popup",
-          },
-        })
-        web3authInstance.configureAdapter(openloginAdapter)
-
-        setWeb3auth(web3authInstance)
-        await web3authInstance.initModal()
-        console.log("Web3Auth initialized:", web3authInstance.provider)
-
-        if (web3authInstance.provider) {
-          setProvider(web3authInstance.provider)
-        } else {
-          console.warn("Web3Auth provider not found after initModal")
-        }
-      } catch (error) {
-        console.error("Failed to initialize Web3Auth:", error)
-      }
+    const checkMetaMask = () => {
+      const hasMetaMask = !!window.ethereum?.isMetaMask
+      setIsMetaMaskAvailable(hasMetaMask)
+      return hasMetaMask
     }
 
-    init()
+    checkMetaMask()
+
+    const handleAccountsChanged = (accounts: string[]) => {
+      setAccount(accounts[0] || null)
+    }
+
+    const handleChainChanged = (hexChainId: string) => {
+      setChainId(parseInt(hexChainId, 16))
+    }
+
+    if (window.ethereum) {
+      window.ethereum.on('accountsChanged', handleAccountsChanged)
+      window.ethereum.on('chainChanged', handleChainChanged)
+    }
+
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener('accountsChanged', handleAccountsChanged)
+        window.ethereum.removeListener('chainChanged', handleChainChanged)
+      }
+    }
   }, [])
 
   const connectWallet = async () => {
-    if (!web3auth) {
-      console.log("Web3Auth not initialized")
+    if (!isMetaMaskAvailable) {
+      alert('Please install MetaMask!')
       return
     }
+
     setIsConnecting(true)
     try {
-      const web3authProvider = await web3auth.connect()
-      setProvider(web3authProvider)
-      if (web3authProvider) {
-        const ethersProvider = new ethers.BrowserProvider(web3authProvider)
-        const signer = await ethersProvider.getSigner()
-        const address = await signer.getAddress()
-        setAccount(address)
-        const network = await ethersProvider.getNetwork()
-        setChainId(Number(network.chainId))
-      }
+      const accounts = await window.ethereum!.request({
+        method: 'eth_requestAccounts'
+      })
+      
+      const hexChainId = await window.ethereum!.request({
+        method: 'eth_chainId'
+      })
+
+      setAccount(accounts[0])
+      setChainId(parseInt(hexChainId, 16))
+      setProvider(new ethers.BrowserProvider(window.ethereum!))
     } catch (error) {
-      console.error("Error connecting:", error)
+      console.error('Error connecting:', error)
+      alert('Failed to connect to MetaMask')
     } finally {
       setIsConnecting(false)
     }
   }
 
   const disconnectWallet = async () => {
-    if (!web3auth) {
-      console.log("Web3Auth not initialized")
-      return
-    }
-    try {
-      await web3auth.logout()
-      setProvider(null)
-      setAccount(null)
-      setChainId(null)
-    } catch (error) {
-      console.error("Error disconnecting:", error)
-    }
+    setAccount(null)
+    setChainId(null)
+    setProvider(null)
   }
 
   return (
@@ -145,8 +114,8 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
         disconnectWallet,
         isConnecting,
         chainId,
-        web3auth,
         provider,
+        isMetaMaskAvailable,
       }}
     >
       {children}

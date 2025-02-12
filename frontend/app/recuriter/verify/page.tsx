@@ -3,8 +3,9 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { motion } from "framer-motion"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Badge, CheckCircle, XCircle } from "lucide-react"
+import { useSearchParams } from "next/navigation"
 
 interface VerificationResult {
   success: boolean
@@ -17,12 +18,14 @@ interface Verification {
   timestamp: string
 }
 
-export default function VerifyPage() {
-  const [studentId, setStudentId] = useState("")
+export default function RecruiterVerifyPage() {
+  const searchParams = useSearchParams()
+  const initialStudentId = searchParams.get("studentId") || ""
+  const [studentId, setStudentId] = useState(initialStudentId)
   const [isVerifying, setIsVerifying] = useState(false)
   const [verificationResult, setVerificationResult] = useState<VerificationResult | null>(null)
   const [recentVerifications, setRecentVerifications] = useState<Verification[]>([])
-  
+
   const backendURL = "http://localhost:4000"
 
   const handleVerify = async (e: React.FormEvent) => {
@@ -30,7 +33,7 @@ export default function VerifyPage() {
     setIsVerifying(true)
     setVerificationResult(null)
     try {
-      const response = await fetch(`http://localhost:4000/verify`, {
+      const response = await fetch(`${backendURL}/recruiter/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ studentId }),
@@ -58,10 +61,6 @@ export default function VerifyPage() {
     }
   }
 
-  // useEffect(() => {
-  //   loadVerifications()
-  // }, []) //Fixed useEffect dependency
-
   return (
     <div className="min-h-screen pt-16 pb-12 flex flex-col items-center justify-center bg-gradient-to-b from-background to-background/80">
       <motion.div
@@ -76,7 +75,7 @@ export default function VerifyPage() {
             <div className="flex justify-center mb-6">
               <Badge className="h-12 w-12 text-cyber-blue" />
             </div>
-            <h1 className="text-2xl font-bold text-center mb-6">CGPA Verification</h1>
+            <h1 className="text-2xl font-bold text-center mb-6">Score Verification</h1>
             <form onSubmit={handleVerify} className="space-y-4">
               <div>
                 <label htmlFor="studentId" className="block text-sm font-medium mb-2">
@@ -85,10 +84,11 @@ export default function VerifyPage() {
                 <Input
                   id="studentId"
                   type="text"
-                  placeholder="Enter your student ID"
+                  placeholder="Enter student ID"
                   value={studentId}
                   onChange={(e) => setStudentId(e.target.value)}
                   required
+                  readOnly // prevent editing if desired
                 />
               </div>
               <Button
@@ -102,14 +102,18 @@ export default function VerifyPage() {
 
             {verificationResult && (
               <div
-                className={`mt-4 p-4 rounded-md ${verificationResult.success ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
+                className={`mt-4 p-4 rounded-md ${
+                  verificationResult.success
+                    ? "bg-green-100 text-green-800"
+                    : "bg-red-100 text-red-800"
+                }`}
               >
                 {verificationResult.success ? (
                   <>
                     <h3 className="flex items-center text-lg font-semibold mb-2">
                       <CheckCircle className="mr-2" /> Verification Successful!
                     </h3>
-                    <p>CGPA is above threshold.</p>
+                    <p>Score is above threshold.</p>
                     <small>Verification Hash: {verificationResult.verificationHash}</small>
                   </>
                 ) : (
@@ -140,4 +144,3 @@ export default function VerifyPage() {
     </div>
   )
 }
-
