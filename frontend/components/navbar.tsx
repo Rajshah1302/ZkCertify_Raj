@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { useWeb3 } from "@/providers/web3-provider"
-import { motion } from "framer-motion"
-import { Wallet, BadgeCheckIcon as Verify, Book } from "lucide-react"
-import Link from "next/link"
-import { useState, useEffect } from "react"
+import { Button } from "@/components/ui/button";
+import { useWeb3 } from "@/providers/web3-provider";
+import { motion } from "framer-motion";
+import { Wallet, BadgeCheckIcon as Verify, Book } from "lucide-react";
+import Link from "next/link";
+import { useState, useEffect } from "react";
 
 // A simple inline SVG logo for ZkCertify
 function Logo() {
@@ -19,7 +19,14 @@ function Logo() {
       className="mr-2"
     >
       <defs>
-        <linearGradient id="logoGradient" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+        <linearGradient
+          id="logoGradient"
+          x1="0"
+          y1="0"
+          x2="100"
+          y2="100"
+          gradientUnits="userSpaceOnUse"
+        >
           <stop offset="0%" stopColor="#007CF0" />
           <stop offset="100%" stopColor="#7928CA" />
         </linearGradient>
@@ -37,26 +44,28 @@ function Logo() {
         Z
       </text>
     </svg>
-  )
+  );
 }
 
 export function Navbar() {
-  const { account, connectWallet, disconnectWallet, isConnecting } = useWeb3()
-  const [isScrolled, setIsScrolled] = useState(false)
+  const { account, connectWallet, disconnectWallet, isConnecting } = useWeb3();
+  const [isScrolled, setIsScrolled] = useState(false);
 
   // Use useEffect to add and remove the scroll listener.
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 0)
-    }
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+      setIsScrolled(window.scrollY > 0);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <motion.nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? "bg-background/80 backdrop-blur-md border-b" : "bg-transparent"
+        isScrolled
+          ? "bg-background/80 backdrop-blur-md border-b"
+          : "bg-transparent"
       }`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
@@ -72,33 +81,38 @@ export function Navbar() {
               </span>
             </Link>
           </div>
-          <div className="hidden md:flex items-center space-x-8">
+          {/* <div className="hidden md:flex items-center space-x-8">
             <Link
-              href="/docs"
+              href="/student"
               className="flex items-center space-x-2 text-sm font-medium hover:text-cyber-blue transition-colors"
             >
-              <Book className="h-4 w-4" />
-              <span>Docs</span>
-            </Link>
-          </div>
-          <div className="flex items-center space-x-4">
-            <Link href="/verify">
               <Button variant="outline" size="sm" className="hidden sm:flex">
-                <Verify className="mr-2 h-4 w-4" />
-                Verify
+                Student
               </Button>
             </Link>
+            <Link
+              href="/verify"
+              className="flex items-center space-x-2 text-sm font-medium hover:text-cyber-blue transition-colors"
+            >
+              <Button variant="outline" size="sm" className="hidden sm:flex">
+                Recruiter
+              </Button>
+            </Link>
+          </div> */}
+          <div className="flex items-center space-x-4">
             <Button
               onClick={account ? disconnectWallet : connectWallet}
               disabled={isConnecting}
               className="bg-gradient-to-r from-cyber-blue to-cyber-purple hover:opacity-90 text-white"
             >
               <Wallet className="mr-2 h-4 w-4" />
-              {account ? `${account.slice(0, 6)}...${account.slice(-4)}` : "Connect Wallet"}
+              {account
+                ? `${account.slice(0, 6)}...${account.slice(-4)}`
+                : "Connect Wallet"}
             </Button>
           </div>
         </div>
       </div>
     </motion.nav>
-  )
+  );
 }

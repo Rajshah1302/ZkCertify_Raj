@@ -1,8 +1,9 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { motion } from "framer-motion"
-import { HeroScene } from "./hero-scene"
+import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import { HeroScene } from "./hero-scene";
+import Link from "next/link";
 
 export function Hero() {
   return (
@@ -22,11 +23,27 @@ export function Hero() {
             ZkCertify: Verifiable Resume Credentials
           </h1>
           <p className="text-lg sm:text-xl mb-8 text-muted-foreground">
-            Empower your career with tamper-proof certifications. ZkCertify uses cutting-edge zero-knowledge proofs to verify and certify your resume data without compromising your privacy—making hiring and recruiting more transparent and trustworthy.
+            Empower your career with tamper-proof certifications. ZkCertify uses
+            cutting-edge zero-knowledge proofs to verify and certify your resume
+            data without compromising your privacy—making hiring and recruiting
+            more transparent and trustworthy.
           </p>
-          <Button size="lg" className="bg-gradient-to-r from-cyber-blue to-cyber-purple hover:opacity-90 text-white">
-            Get Certified
-          </Button>
+          <Link href="/student" className="mx-2">
+            <Button
+              size="lg"
+              className="bg-gradient-to-r from-cyber-blue to-cyber-purple hover:opacity-90 text-white"
+            >
+              Student
+            </Button>
+          </Link>
+          <Link href="/verify" className="mx-2">
+            <Button
+              size="lg"
+              className="bg-gradient-to-r from-cyber-blue to-cyber-purple hover:opacity-90 text-white"
+            >
+              Recruiter
+            </Button>
+          </Link>
         </motion.div>
       </div>
 
@@ -58,5 +75,5 @@ export function Hero() {
         </motion.div>
       </div>
     </section>
-  )
+  );
 }
