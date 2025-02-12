@@ -4,12 +4,8 @@
    "description": "Zero-knowledge CGPA verification system",
    "main": "src/server.js",
    "scripts": {
-      "init-cgpa": "node ./src/generateCGPAMapping.js && node ./src/normalizeStudent.js && node ./src/resetVerifications.js",
-      "start": "node src/server.js",
-      "compile-circuit": "cd circuit && make setup",
-      "test": "forge test",
-      "generate-proof": "node ./src/generateProof.js",
-      "verify-proof": "node ./src/zkverify.js",
+      "start": "node src/index.js",
+      "compile-circuit": "cd circuit && make clean && make setup",
       "clean": "rm -rf circuit/build && rm -rf circuit/setup"
    },
    "author": "zkAyush",
