@@ -26,16 +26,6 @@ const navItems = [
     href: "/student/test",
     icon: GraduationCap,
   },
-  {
-    title: "Events",
-    href: "/student/events",
-    icon: Calendar,
-  },
-  {
-    title: "Messages",
-    href: "/student/messages",
-    icon: MessageSquare,
-  },
 ]
 
 export function SidebarNav() {
