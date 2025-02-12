@@ -4,7 +4,7 @@ const path = require("path");
 const { generateProof } = require("../src/generateProof");
 const { verify } = require("../src/zkverify");
 const router = express.Router();
-
+const { } = reuire("")
 const SCORE_THRESHOLD = 1400;
 const verificationResultsPath = "../verificationResults.json";
 
