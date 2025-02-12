@@ -6,6 +6,7 @@ const verifyRoutes = require("../routes/verifyRoutes");
 const historyRoutes = require("../routes/historyRoutes");
 const configRoutes = require("../routes/configRoutes");
 const testRoutes = require("../routes/testRoutes");
+const certificateRoutes = require("../routes/certificateRoutes");
 const app = express();
 const PORT = 4000;
 
@@ -21,6 +22,7 @@ app.use("/verify", verifyRoutes);
 app.use("/verifications", historyRoutes);
 app.use("/threshold", configRoutes);
 app.use("/test", testRoutes);
+app.use("/certificate", certificateRoutes);
 app.listen(PORT, () => {
   console.log(`ZkCertify server running on port ${PORT}`);
 });

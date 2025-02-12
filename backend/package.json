@@ -10,6 +10,7 @@
     "groq-sdk": "^0.15.0",
     "http-server": "^14.1.1",
     "merkletreejs": "^0.4.1",
+    "pdf-master": "^1.1.0",
     "snarkjs": "^0.7.5",
     "xlsx": "^0.18.5",
     "zkverifyjs": "^0.6.0"
