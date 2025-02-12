@@ -8,32 +8,32 @@ import { Button } from "@/components/ui/button"
 const navItems = [
   {
     title: "Dashboard",
-    href: "/dashboard",
+    href: "/student",
     icon: LayoutDashboard,
   },
   {
     title: "Profile",
-    href: "/profile",
+    href: "/student/profile",
     icon: UserCircle,
   },
   {
     title: "Jobs",
-    href: "/jobs",
+    href: "/student/jobs",
     icon: Briefcase,
   },
   {
     title: "Skills",
-    href: "/skills",
+    href: "/student/test",
     icon: GraduationCap,
   },
   {
     title: "Events",
-    href: "/events",
+    href: "/student/events",
     icon: Calendar,
   },
   {
     title: "Messages",
-    href: "/messages",
+    href: "/student/messages",
     icon: MessageSquare,
   },
 ]
