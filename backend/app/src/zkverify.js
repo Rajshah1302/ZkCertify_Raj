@@ -17,6 +17,10 @@ async function verify(proof, publicSignals) {
   const ETH_SECRET_KEY = "0xc5bbc52585e112afddbd3cdc271e8c87c4a959e4a24994d7f9438a859edea9d0";
 
   try {
+    if (publicSignals[1] === "0") {
+      throw new Error("THRESHOLD_NOT_MET: Student score is below required threshold of 1400");
+    }
+
     // Initialize core components
     const evmAccount = new ethers.Wallet(ETH_SECRET_KEY).address;
     const provider = new ethers.JsonRpcProvider(ETH_RPC_URL, null, { polling: true });
