@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,26 +22,52 @@ import {
 } from "lucide-react";
 import axios from "axios";
 
+// Default values in case nothing is stored yet.
+const defaultUser = {
+  name: "Anonymous User",
+  wallet: "0x720f...698b",
+  bio: "",
+  email: "",
+  github: "",
+  linkedin: "",
+  portfolio: "",
+};
+
 export function ProfilePage() {
-  // Profile state
-  const [user, setUser] = useState({
-    name: "Anonymous User",
-    wallet: "0x720f...698b",
-    bio: "",
-    email: "",
-    github: "",
-    linkedin: "",
-    portfolio: "",
+  // Lazy initialization for user state from localStorage
+  const [user, setUser] = useState(() => {
+    if (typeof window !== "undefined") {
+      const storedUser = localStorage.getItem("profileUser");
+      return storedUser ? JSON.parse(storedUser) : defaultUser;
+    }
+    return defaultUser;
   });
 
-  // Edit Profile modal state
+  // Lazy initialization for skills state from localStorage
+  const [skills, setSkills] = useState<string[]>(() => {
+    if (typeof window !== "undefined") {
+      const storedSkills = localStorage.getItem("profileSkills");
+      return storedSkills ? JSON.parse(storedSkills) : [];
+    }
+    return [];
+  });
+
+  // Separate state for modal editing
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState(user);
-
-  // Skills state
-  const [skills, setSkills] = useState<string[]>([]);
   const [newSkill, setNewSkill] = useState("");
 
+  // Persist user profile data whenever it changes
+  useEffect(() => {
+    localStorage.setItem("profileUser", JSON.stringify(user));
+  }, [user]);
+
+  // Persist skills data whenever it changes
+  useEffect(() => {
+    localStorage.setItem("profileSkills", JSON.stringify(skills));
+  }, [skills]);
+
+  // Handlers for profile edit and skills management
   const handleEditClick = () => {
     setFormData(user);
     setIsEditing(true);
@@ -61,30 +87,31 @@ export function ProfilePage() {
 
   const handleGenerateResume = async () => {
     try {
-      // Request the PDF from the backend endpoint
-      const response = await axios.get('http://localhost:4000/certificate/generate', {
-        responseType: 'blob', // ensures the response is treated as binary data
+      const userDetails = {
+        name: user.name,
+        wallet: user.wallet,
+        bio: user.bio,
+        email: user.email,
+        github: user.github,
+        linkedin: user.linkedin,
+        portfolio: user.portfolio,
+        skills: skills,
+      };
+
+      // Request the PDF from the backend endpoint with user data
+      const response = await axios.get("http://localhost:4000/certificate/generate", {
+        params: userDetails,
+        responseType: "blob",
       });
-      
-      // Create a blob from the PDF data
-      const file = new Blob([response.data], { type: 'application/pdf' });
+
+      // Create a blob from the PDF data and open it in a new tab
+      const file = new Blob([response.data], { type: "application/pdf" });
       const fileURL = URL.createObjectURL(file);
-  
-      // Option 1: Open the PDF in a new browser tab
       window.open(fileURL);
-      
-      // Option 2: Trigger a download of the PDF
-      // const link = document.createElement('a');
-      // link.href = fileURL;
-      // link.setAttribute('download', 'zkCertificate.pdf');
-      // document.body.appendChild(link);
-      // link.click();
-      // document.body.removeChild(link);
     } catch (error) {
-      console.error('Error generating PDF:', error);
+      console.error("Error generating PDF:", error);
     }
   };
-  
 
   return (
     <div className="min-h-screen bg-background">
@@ -196,7 +223,6 @@ export function ProfilePage() {
                 setFormData({ ...formData, bio: e.target.value })
               }
             />
-
             <Input
               placeholder="Email"
               value={formData.email}
