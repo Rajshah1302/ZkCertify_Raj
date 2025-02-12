@@ -186,7 +186,9 @@ async function generateProof(studentId, threshold) {
 
     const proofData = merkleTreeInstance.getMerkleProof(studentIndex);
     const authPath = proofData.lemma.map(x => poseidon.F.toString(x));
-
+    const score = scaledCGPA + (studentTestScore * BigInt(10));
+   
+  
     // Pass the test score as an additional private input.
     const circuitInputs = {
         merkleRoot: BigInt(merkleRoot),
@@ -215,6 +217,12 @@ async function generateProof(studentId, threshold) {
 
     console.log("Proof generated successfully.");
     console.log("Public Signals:", publicSignals);
+    if (publicSignals[0] === "0") {
+        throw {
+          type: 'THRESHOLD_NOT_MET',
+          message: `Score is below required threshold (${threshold})`
+        };
+      }
     return { proof, publicSignals };
 }
 
