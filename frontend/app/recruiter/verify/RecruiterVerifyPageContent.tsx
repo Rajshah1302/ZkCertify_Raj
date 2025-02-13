@@ -21,7 +21,7 @@ interface Verification {
 }
 
 export default function VerifyPage() {
-  const backendURL = "http://localhost:4000";
+  const backendURL = "https://zkcertify-backend.onrender.com";
   const searchParams = useSearchParams();
   const initialStudentId = searchParams.get("studentId") || "";
   const [studentId, setStudentId] = useState(initialStudentId);
