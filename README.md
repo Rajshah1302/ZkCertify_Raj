@@ -56,6 +56,8 @@ https://youtu.be/YG1DjKzlmFQ
 ![image](https://github.com/user-attachments/assets/f8d99b82-a0e4-418f-b3aa-072f53e6944e)
 ![image](https://github.com/user-attachments/assets/cae80960-b87a-42f3-b11a-26a24d615ee0)
 ![image](https://github.com/user-attachments/assets/52a3679e-93f4-4d1a-afab-bb72b008e29b)
+![image](https://github.com/user-attachments/assets/a0808b42-35b7-4421-b725-937ed12d11fa)
+
 
 ---
 
@@ -80,7 +82,7 @@ Below is a high-level architecture diagram illustrating the major components and
 ## Prerequisites
 - **Node.js** (>= 14.x recommended)
 - **npm** (>= 6.x)
-- **Circom** (for ZK circuit compilation) or Docker-based setup if you prefer
+- **Circom** (for ZK circuit compilation)
 - **MetaMask** (browser extension) for testing the dApp
 
 ---
