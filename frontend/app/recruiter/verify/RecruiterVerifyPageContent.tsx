@@ -31,12 +31,15 @@ export default function VerifyPage() {
   const [recentVerifications, setRecentVerifications] = useState<
     Verification[]
   >([]);
-
+  const [isVerifyingArb, setIsVerifyingArb] = useState(false);
+  const [isVerifyingEdu, setIsVerifyingEdu] = useState(false);
   const { connectWallet, chainId, provider } = useWeb3();
-  const ARBITRUM_TESTNET_CHAIN_ID = 421614; 
-  const EDUCHAIN_TESTNET_CHAIN_ID = 656476; 
+  const ARBITRUM_TESTNET_CHAIN_ID = 421614;
+  const EDUCHAIN_TESTNET_CHAIN_ID = 656476;
 
   const handleArbitrumVerify = async () => {
+    setIsVerifyingArb(true);
+    setIsVerifying(true);
     if (!provider) {
       await connectWallet();
     }
@@ -75,10 +78,17 @@ export default function VerifyPage() {
         }
       }
     }
-    handleVerify("Arbitrum");
+    try {
+      await handleVerify("Arbitrum");
+    } finally {
+      setIsVerifyingArb(false);
+      setIsVerifying(false);
+    }
   };
 
   const handleEDUCHAINVerify = async () => {
+    setIsVerifyingEdu(true);
+    setIsVerifying(true);
     if (!provider) {
       await connectWallet();
     }
@@ -119,7 +129,12 @@ export default function VerifyPage() {
         }
       }
     }
-    handleVerify("EDUCHAIN");
+    try {
+      await handleVerify("EDUCHAIN");
+    } finally {
+      setIsVerifyingEdu(false);
+      setIsVerifying(false);
+    }
   };
 
   const handleVerify = async (network: "Arbitrum" | "EDUCHAIN") => {
@@ -216,7 +231,7 @@ export default function VerifyPage() {
                   disabled={!studentId || isVerifying}
                   className="flex-1 bg-gradient-to-r from-cyber-blue to-cyber-purple hover:opacity-90 text-white"
                 >
-                  {isVerifying ? "Verifying..." : "Verify in Arbitrum"}
+                  {isVerifyingArb ? "Verifying..." : "Verify in Arbitrum"}
                 </Button>
                 <Button
                   type="button"
@@ -224,7 +239,7 @@ export default function VerifyPage() {
                   disabled={!studentId || isVerifying}
                   className="flex-1 bg-gradient-to-r from-cyber-pink to-cyber-purple hover:opacity-90 text-white"
                 >
-                  {isVerifying ? "Verifying..." : "Verify in EDUCHAIN"}
+                  {isVerifyingEdu ? "Verifying..." : "Verify in EDUCHAIN"}
                 </Button>
               </div>
             </form>
