@@ -8,6 +8,7 @@ const router = express.Router();
 const SCORE_THRESHOLD = 1400;
 const verificationResultsPath = "../verificationResults.json";
 
+// Ensure verificationResults.json exists
 if (!fs.existsSync(verificationResultsPath)) {
   fs.writeFileSync(
     verificationResultsPath,
@@ -19,14 +20,11 @@ router.post("/", async (req, res) => {
   console.log("Received verification request:", req.body);
 
   try {
-    const { studentId } = req.body;
-    if (!studentId) throw new Error("Missing studentId");
+    const { studentId, network } = req.body;
+    if (!studentId || !network) throw new Error("Missing required fields: studentId or network");
 
     console.log("Step 1: Generating proof...");
-    const { proof, publicSignals } = await generateProof(
-      studentId,
-      SCORE_THRESHOLD
-    );
+    const { proof, publicSignals } = await generateProof(studentId, SCORE_THRESHOLD);
 
     console.log("Step 2: Verifying proof...");
     const verificationResult = await verify(proof, publicSignals);
@@ -45,12 +43,14 @@ router.post("/", async (req, res) => {
 
     console.log("Verification completed successfully!");
     console.log("Sending attestation data...");
+    
     const attestationPath = path.join(__dirname, "../../attestation.json");
     if (!fs.existsSync(attestationPath)) {
       throw new Error("attestation.json file not found");
     }
+    
     const attestationData = JSON.parse(fs.readFileSync(attestationPath, "utf8"));
-    const receipt = await sendAttestation(attestationData);
+    const receipt = await sendAttestation(attestationData, network);
     res.json({ success: true, receipt: receipt.hash });
   } catch (error) {
     console.error("Verification failed:", error);
