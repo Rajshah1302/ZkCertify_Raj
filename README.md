@@ -1,9 +1,6 @@
-```markdown
 # ZKCertify
 
-This repository contains a **ZK-based** verification system that enables the generation and validation of attestations across multiple chains (**EDUCHAIN** and **Arbitrum**). The system demonstrates how user data (like CGPA, test score) can be verified and minted into an NFT on the chosen chain.
-
----
+This repository contains a **ZK-based** verification system that enables the generation and validation of attestations across multiple chains (EDUCHAIN and Arbitrum). The system also demonstrates how user data (like CGPA, test score) can be verified and minted into an NFT on the chosen chain.
 
 ## Table of Contents
 - [Overview](#overview)
@@ -21,7 +18,8 @@ This repository contains a **ZK-based** verification system that enables the gen
 ---
 
 ## Overview
-**ZKCertify** leverages **zero-knowledge proofs** to ensure the integrity of user data without exposing the underlying information. It allows recruiters or other parties to:
+ZKCertify leverages **zero-knowledge proofs** to ensure the integrity of user data without exposing the underlying information. It allows recruiters or other parties to:
+
 1. Request verification of a user's credentials (CGPA, test scores).
 2. Generate and validate ZK proofs.
 3. Mint an NFT as proof of verification on the selected chain (Arbitrum or EDUCHAIN).
@@ -29,38 +27,47 @@ This repository contains a **ZK-based** verification system that enables the gen
 ---
 
 ## Core Idea
-1. A **student** registers on the platform and stores their **CGPA**.
-2. As the student learns new skills, they can take various **tests** (e.g., skill-based tests).  
-3. The system checks if **CGPA + test score** is greater than a defined **threshold**.  
-   - If **CGPA + test score ≥ threshold**, the output is **1** (passed).  
-   - Otherwise, the output is **0** (not passed).  
-4. **Recruiters** can verify these proofs on-chain whenever a student applies for a role.
+The core idea behind **ZKCertify** is to create a transparent yet privacy-preserving platform for **students** and **recruiters**:
 
-This approach preserves the student’s privacy (thanks to zero-knowledge proofs) while still allowing recruiters to validate the student’s performance.
+1. **Student Registration & Data Storage**  
+   - Students register on the platform and provide their **CGPA**.  
+   - As they learn new skills, they can take various **tests** on the platform.
+
+2. **Scoring & Verification**  
+   - Each student’s CGPA and newly acquired **test scores** are combined to check if they exceed a certain **threshold**.  
+   - If the sum is greater than the threshold, the platform records a **1** (pass), otherwise a **0** (fail).  
+   - This pass/fail outcome is then **verified** on-chain using **ZK proofs**, ensuring that the underlying data (CGPA, test score) remains private.
+
+3. **Recruiter Verification**  
+   - When a student applies for a role, the recruiter can easily verify the student's performance by checking the on-chain proof.  
+   - The **NFT** minted from this verification process serves as a **tamper-proof attestation** of the student’s credentials.
 
 ---
 
 ## Demo
 **Video Demo:**  
-_A link to your recorded demo video goes here._
+https://youtu.be/YG1DjKzlmFQ  
 
 **Screenshots:**  
-_Attach or embed relevant screenshots of your website or application interface._
+
 
 ---
 
 ## Architecture
 Below is a high-level architecture diagram illustrating the major components and data flow:
 
-![Architecture Diagram](./architecture.png)
+![image](https://github.com/user-attachments/assets/5e6e2ba9-7d71-4181-b683-5bd43fa8097c)
+![image](https://github.com/user-attachments/assets/611bf317-9b22-4ef7-8be9-43fb3183c0a2)
 
-- **User** can:
+
+- **User (Student)** can:
   - Connect/disconnect wallet (e.g., MetaMask).
   - Add CGPA and take tests (which updates verification data).
+  - Generate proofs of credentials.
 - **Recruiter** can:
   - Connect wallet.
-  - Request verification.
-  - Receive the final attestation and NFT minted on the chain of choice (Arbitrum or EDUCHAIN).
+  - Request verification of a student’s credentials.
+  - Receive the final attestation (NFT) minted on the chain of choice (Arbitrum or EDUCHAIN).
 
 ---
 
@@ -93,7 +100,7 @@ Below is a high-level architecture diagram illustrating the major components and
      ```
 
 3. **Compile ZK Circuit**  
-   Go back to the root folder (or wherever your `circuit.circom` file is located) and run:
+   Return to the root folder (or wherever your `circuit.circom` file is located) and run:
    ```bash
    npm run complete-circuit
    ```
@@ -130,15 +137,15 @@ ETH_SECRET_KEY=
 ARB_URL=
 EDU_URL=
 ```
-- **ZKV_RPC_URL**: The RPC endpoint for ZKV (if applicable).
-- **ETH_RPC_URL**: The RPC endpoint for Ethereum (or your desired testnet).
-- **ETH_ZKVERIFY_CONTRACT_ADDRESS**: Address of the ZKVerify contract on Ethereum (if applicable).
-- **ARB_ZKCERTIFY_CONTRACT_ADDRESS**: Address of the contract deployed on Arbitrum.
-- **EDU_ZKCERTIFY_CONTRACT_ADDRESS**: Address of the contract deployed on EDUCHAIN.
-- **GROQ_API_KEY**: (If you use any third-party or internal API key).
-- **ZKV_SEED_PHRASE**: Seed phrase for the account used in the ZK environment.
-- **ETH_SECRET_KEY**: Private key for Ethereum-based deployments.
-- **ARB_URL**: RPC endpoint for Arbitrum.
+- **ZKV_RPC_URL**: The RPC endpoint for ZKV.  
+- **ETH_RPC_URL**: The RPC endpoint for Ethereum (or your desired testnet).  
+- **ETH_ZKVERIFY_CONTRACT_ADDRESS**: Address of the ZKVerify contract on Ethereum (if applicable).  
+- **ARB_ZKCERTIFY_CONTRACT_ADDRESS**: Address of the contract deployed on Arbitrum.  
+- **EDU_ZKCERTIFY_CONTRACT_ADDRESS**: Address of the contract deployed on EDUCHAIN.  
+- **GROQ_API_KEY**: (If you use any third-party or internal API key).  
+- **ZKV_SEED_PHRASE**: Seed phrase for the account used in the ZK environment.  
+- **ETH_SECRET_KEY**: Private key for Ethereum-based deployments.  
+- **ARB_URL**: RPC endpoint for Arbitrum.  
 - **EDU_URL**: RPC endpoint for EDUCHAIN.
 
 ---
@@ -146,58 +153,42 @@ EDU_URL=
 ## Running Locally
 
 1. **Backend**  
-   - Navigate to the backend directory:
-     ```bash
-     cd backend
-     ```
-   - Install dependencies (if you haven’t already):
-     ```bash
-     npm install
-     ```
-   - Start the server:
-     ```bash
-     node app/src/index.js
-     ```
-   The backend should now be running on the specified port (default is usually `http://localhost:3001`).
+   ```bash
+   cd backend
+   npm install
+   node app/src/index.js
+   ```
+   The backend should now be running on the specified port (default is usually `http://localhost:3001` or whichever is set in your code).
 
 2. **Frontend**  
-   - Open a new terminal window and navigate to the frontend directory:
-     ```bash
-     cd frontend
-     ```
-   - Install dependencies (if you haven’t already):
-     ```bash
-     npm install
-     ```
-   - Run the development server:
-     ```bash
-     npm run dev
-     ```
-   By default, this starts on `http://localhost:3000`.
+   ```bash
+   cd ../frontend
+   npm install
+   npm run dev
+   ```
+   By default, this starts on `http://localhost:3000` (or the next available port).
 
 ---
 
 ## Usage
-
 1. **Connect Wallet** (e.g., MetaMask) on the website.  
-2. **Register / Add CGPA / Take Test** to generate or update your user data.  
-3. **Generate Proof** which uses the underlying **ZK circuit** to prove your credentials (CGPA + Test Score).  
-4. **Select a Chain** (Arbitrum or EDUCHAIN) to mint the verification NFT.  
-5. **Recruiters** can connect their wallets to verify your credentials and see proof on-chain.  
+2. **Register as Student** to add your **CGPA**.  
+3. **Take Tests** to generate or update your test scores.  
+4. **Generate Proof** using the underlying **ZK circuit**, which checks if CGPA + test score ≥ threshold.  
+5. **Select a Chain** (Arbitrum or EDUCHAIN) to mint the verification NFT.  
+6. **Recruiters** can connect their wallets to verify your credentials on-chain and see proof of whether you passed the threshold.
 
 ---
 
 ## Future Plans
-- **Additional Tests**: DSA, Assignments, Interviews, automatically checked by AI.  
-- **Job Postings**: Recruiters can post openings with required skills, and the platform can suggest suitable students.  
-- **Resume as NFT**: Students can mint their verified resume as an NFT on the chain of their choice.  
+1. **Additional Skill Tests**  
+   - Incorporate new test types (e.g., **Data Structures & Algorithms**, **Assignments**, **Interviews**) that can be automatically graded by **AI**.
+2. **Job Postings & Matching**  
+   - Enable **recruiters** to post job openings with required skills.  
+   - Automatically **match** qualified students to open positions based on their CGPA + test scores.
+3. **NFT-Based Resume**  
+   - Allow students to generate a **resume as an NFT**, bundling their verified credentials in a single, on-chain artifact.
+
+These enhancements will further streamline the student–recruiter interaction while maintaining privacy and trust via zero-knowledge proofs.
 
 ---
-
-## License
-_Include your preferred license here (e.g., MIT, Apache 2.0)_
-
----
-
-**Happy Building!** If you have any questions or suggestions, feel free to open an issue or submit a pull request.
-```
