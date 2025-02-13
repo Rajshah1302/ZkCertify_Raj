@@ -1,5 +1,6 @@
 // zkverify.js
 const snarkjs = require("snarkjs");
+const path = require("path");
 const fs = require("fs");
 const { zkVerifySession, ZkVerifyEvents } = require("zkverifyjs");
 const { ethers, id } = require("ethers");
@@ -25,7 +26,9 @@ async function verify(proof, publicSignals) {
     const evmAccount = new ethers.Wallet(ETH_SECRET_KEY).address;
     const provider = new ethers.JsonRpcProvider(ETH_RPC_URL, null, { polling: true });
     const wallet = new ethers.Wallet(ETH_SECRET_KEY, provider);
-    const vk = JSON.parse(fs.readFileSync(`/home/nightfury69/Downloads/ZkCertify/backend/circuit/setup/verification_key.json`));
+    const verificationPath = path.join(__dirname, "../../circuit/setup/verification_key.json");
+
+    const vk = JSON.parse(fs.readFileSync(verificationPath, "utf8"));
 
 
     // Establish zkVerify session

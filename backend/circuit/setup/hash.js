@@ -1,19 +1,25 @@
-// To run this script, follow these steps:
-// 1. Ensure you have Node.js installed on your machine.
-// 2. Install the 'ethers' library by running: npm install ethers
-// 3. Place your 'verification_key.json' file in the same directory as this script.
-// 4. Run the script using the command: node hash.js
+// circuit/setup/hash.js
 
-const fs = require("fs");
-const { ethers } = require("ethers");
+const fs = require('fs');
+const path = require('path');
+const ethers = require('ethers');
 
 function getVKHash() {
-  const verificationKey = JSON.parse(fs.readFileSync("verification_key.json"));
-  const vkHash = ethers.keccak256(
-    ethers.toUtf8Bytes(JSON.stringify(verificationKey))
-  );
-  return vkHash;
+  try {
+    // Use path.join for cross-platform compatibility
+    const vkPath = path.join(__dirname, 'verification_key.json');
+    
+    // Check if file exists
+    if (!fs.existsSync(vkPath)) {
+      throw new Error(`verification_key.json not found at ${vkPath}`);
+    }
+
+    const vk = JSON.parse(fs.readFileSync(vkPath));
+    return ethers.id(JSON.stringify(vk));
+  } catch (error) {
+    console.error('Error reading verification key:', error.message);
+    process.exit(1);
+  }
 }
 
-console.log("vkHash:", getVKHash());
-module.exports = { getVKHash };
+console.log('Verification Key Hash:', getVKHash());

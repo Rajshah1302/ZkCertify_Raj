@@ -36,7 +36,7 @@ export function Hero() {
               Student
             </Button>
           </Link>
-          <Link href="/verify" className="mx-2">
+          <Link href="/recruiter" className="mx-2">
             <Button
               size="lg"
               className="bg-gradient-to-r from-cyber-blue to-cyber-purple hover:opacity-90 text-white"

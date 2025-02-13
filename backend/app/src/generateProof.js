@@ -202,9 +202,10 @@ async function generateProof(studentId, threshold) {
 
     console.log("Circuit Inputs:", circuitInputs);
 
-    // Set the paths to the compiled circuit’s WASM and zkey files.
-    const wasmPath = `/home/nightfury69/Downloads/ZkCertify/backend/circuit/setup/circuit.wasm`;
-    const zkeyPath = `/home/nightfury69/Downloads/ZkCertify/backend/circuit/setup/circuit_final.zkey`;
+   
+
+    const wasmPath = path.join(__dirname, "../../circuit/setup/circuit.wasm");
+    const zkeyPath = path.join(__dirname, "../../circuit/setup/circuit_final.zkey");
     console.log("Using WASM Path:", wasmPath);
     console.log("Using ZKey Path:", zkeyPath);
 

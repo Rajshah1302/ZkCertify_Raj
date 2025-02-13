@@ -1,12 +1,11 @@
 {
-  "root": "0xb6ef1bd7c642b8ceb364bffd3c2cde57c802307a67ff3703e2768adf68c2c720",
+  "root": "0x1e25320718ff3e32121f905d0255b0ec48c009f61ab76cc603cc36b62f93d9d5",
   "proof": [
-    "0x2a6d351b9acc13ba9f8a0bbc3c16dbb8629dde06fdd0a9db28ca8864bad84e0a",
-    "0xc22c53ed0fdcfc4d2fe5137fbc9da01a4d5f31a9581f408bc45441155d4a1607",
-    "0xa498da29afdc16ba9f45798e1e526ea7d12f4f6b68391bc0b9b5e3f9b43c6a10"
+    "0xd12ba8a95983754fa667f9453c43b4862b27eac0c84beb1a5dfe7e8d1be4fda7",
+    "0xc6f674d48416904421884bc00246a33f3e89a43e7d96a56921aeadff4d988450"
   ],
-  "numberOfLeaves": 6,
-  "leafIndex": 3,
-  "leaf": "0xb103b3d1b901bad380a2996aa057202eac6d658f370c623bb795f688fd43a3c3",
-  "attestationId": 42878
+  "numberOfLeaves": 4,
+  "leafIndex": 1,
+  "leaf": "0x9df3ac81a0fe19c5f2cbb84d2f50f78913f80b453715224c2a3ad328885fdc1a",
+  "attestationId": 43431
 }
