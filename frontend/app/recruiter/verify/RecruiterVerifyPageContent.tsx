@@ -3,9 +3,10 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { motion } from "framer-motion"
-import { useState } from "react"
-import { Badge, CheckCircle, XCircle } from "lucide-react"
+import { useState, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
+import { Badge, CheckCircle, XCircle } from "lucide-react"
+import { useWeb3 } from "@/providers/web3-provider"
 
 interface VerificationResult {
   success: boolean
@@ -16,9 +17,10 @@ interface VerificationResult {
 interface Verification {
   studentId: string
   timestamp: string
+  network: string
 }
 
-export default function RecruiterVerifyPageContent() {
+export default function VerifyPage() {
   const searchParams = useSearchParams()
   const initialStudentId = searchParams.get("studentId") || ""
   const [studentId, setStudentId] = useState(initialStudentId)
@@ -26,17 +28,116 @@ export default function RecruiterVerifyPageContent() {
   const [verificationResult, setVerificationResult] = useState<VerificationResult | null>(null)
   const [recentVerifications, setRecentVerifications] = useState<Verification[]>([])
 
-  const backendURL = "http://localhost:4000"
+  const { connectWallet, chainId, provider } = useWeb3()
+  const ARBITRUM_TESTNET_CHAIN_ID = 421614 // Arbitrum Sepolia Testnet
+  const EDUCHAIN_TESTNET_CHAIN_ID = 656476 // Assuming EDUCHAIN is using Sepolia Testnet, adjust if different
 
-  const handleVerify = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleArbitrumVerify = async () => {
+    if (!provider) {
+      await connectWallet()
+    }
+    if (chainId !== ARBITRUM_TESTNET_CHAIN_ID) {
+      try {
+        await window.ethereum!.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: `0x${ARBITRUM_TESTNET_CHAIN_ID.toString(16)}` }],
+        })
+      } catch (switchError: any) {
+        // This error code indicates that the chain has not been added to MetaMask
+        if (switchError.code === 4902) {
+          try {
+            await window.ethereum!.request({
+              method: "wallet_addEthereumChain",
+              params: [
+                {
+                 chainId: `0x${ARBITRUM_TESTNET_CHAIN_ID.toString(16)}`, 
+                 chainName: "Arbitrum Sepolia Testnet",
+                 nativeCurrency: {
+                   name: "Ethereum",
+                   symbol: "ETH",
+                   decimals: 18,
+                  },
+                rpcUrls: ["https://sepolia-rollup.arbitrum.io/rpc"],
+                blockExplorerUrls: ["https://sepolia.arbiscan.io/"],
+                },
+              ],
+            })
+          } catch (addError) {
+            console.error("Failed to add Arbitrum Testnet:", addError)
+            return
+          }
+        } else {
+          console.error("Failed to switch to Arbitrum Testnet:", switchError)
+          return
+        }
+      }
+    }
+    handleVerify("Arbitrum")
+  }
+
+  const handleEDUCHAINVerify = async () => {
+    if (!provider) {
+      await connectWallet()
+    }
+    if (chainId !== EDUCHAIN_TESTNET_CHAIN_ID) {
+      try {
+        await window.ethereum!.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: `0x${EDUCHAIN_TESTNET_CHAIN_ID.toString(16)}` }],
+        })
+      } catch (switchError: any) {
+        // This error code indicates that the chain has not been added to MetaMask
+        if (switchError.code === 4902) {
+          try {
+            await window.ethereum!.request({
+              method: "wallet_addEthereumChain",
+              params: [
+                {
+                  chainId: `0x${EDUCHAIN_TESTNET_CHAIN_ID.toString(16)}`,
+chainName: "EDUCHAIN Testnet",
+nativeCurrency: {
+  name: "Ethereum",
+  symbol: "ETH",
+  decimals: 18,
+},
+rpcUrls: ["https://rpc.open-campus-codex.gelato.digital"],
+blockExplorerUrls: ["https://opencampus-codex.blockscout.com"],
+},
+              ],
+            })
+          } catch (addError) {
+            console.error("Failed to add EDUCHAIN Testnet:", addError)
+            return
+          }
+        } else {
+          console.error("Failed to switch to EDUCHAIN Testnet:", switchError)
+          return
+        }
+      }
+    }
+    handleVerify("EDUCHAIN")
+  }
+
+  const handleVerify = async (network: "Arbitrum" | "EDUCHAIN") => {
     setIsVerifying(true)
     setVerificationResult(null)
     try {
-      const response = await fetch(`${backendURL}/verify`, {
+      // Fetch the network name from MetaMask
+      const network = await window.ethereum!.request({ method: "eth_chainId" }).then((chainId: string) => {
+        switch (Number.parseInt(chainId, 16)) {
+          case ARBITRUM_TESTNET_CHAIN_ID:
+            return "Arbitrum"
+          case EDUCHAIN_TESTNET_CHAIN_ID:
+            return "EDUCHAIN"
+          default:
+            return "Unknown Network"
+        }
+      })
+
+      const response = await fetch(`/api/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ studentId }),
+        body: JSON.stringify({ studentId, network }),
       })
 
       const result = await response.json()
@@ -53,13 +154,17 @@ export default function RecruiterVerifyPageContent() {
 
   const loadVerifications = async () => {
     try {
-      const response = await fetch(`${backendURL}/verifications`)
+      const response = await fetch("/api/verifications")
       const verifications = await response.json()
       setRecentVerifications(verifications)
     } catch (error) {
       console.error("Failed to load recent verifications:", error)
     }
   }
+
+  useEffect(() => {
+    loadVerifications()
+  }, [studentId]) // Added studentId as a dependency
 
   return (
     <div className="min-h-screen pt-16 pb-12 flex flex-col items-center justify-center bg-gradient-to-b from-background to-background/80">
@@ -75,8 +180,8 @@ export default function RecruiterVerifyPageContent() {
             <div className="flex justify-center mb-6">
               <Badge className="h-12 w-12 text-cyber-blue" />
             </div>
-            <h1 className="text-2xl font-bold text-center mb-6">Score Verification</h1>
-            <form onSubmit={handleVerify} className="space-y-4">
+            <h1 className="text-2xl font-bold text-center mb-6">CGPA Verification</h1>
+            <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
               <div>
                 <label htmlFor="studentId" className="block text-sm font-medium mb-2">
                   Student ID
@@ -84,36 +189,42 @@ export default function RecruiterVerifyPageContent() {
                 <Input
                   id="studentId"
                   type="text"
-                  placeholder="Enter student ID"
+                  placeholder="Enter your student ID"
                   value={studentId}
                   onChange={(e) => setStudentId(e.target.value)}
                   required
-                  readOnly // prevent editing if desired
                 />
               </div>
-              <Button
-                type="submit"
-                disabled={!studentId || isVerifying}
-                className="w-full bg-gradient-to-r from-cyber-blue to-cyber-purple hover:opacity-90 text-white"
-              >
-                {isVerifying ? "Verifying..." : "Verify"}
-              </Button>
+              <div className="flex space-x-4">
+                <Button
+                  type="button"
+                  onClick={handleArbitrumVerify}
+                  disabled={!studentId || isVerifying}
+                  className="flex-1 bg-gradient-to-r from-cyber-blue to-cyber-purple hover:opacity-90 text-white"
+                >
+                  {isVerifying ? "Verifying..." : "Verify in Arbitrum"}
+                </Button>
+                <Button
+                  type="button"
+                  onClick={handleEDUCHAINVerify}
+                  disabled={!studentId || isVerifying}
+                  className="flex-1 bg-gradient-to-r from-cyber-pink to-cyber-purple hover:opacity-90 text-white"
+                >
+                  {isVerifying ? "Verifying..." : "Verify in EDUCHAIN"}
+                </Button>
+              </div>
             </form>
 
             {verificationResult && (
               <div
-                className={`mt-4 p-4 rounded-md ${
-                  verificationResult.success
-                    ? "bg-green-100 text-green-800"
-                    : "bg-red-100 text-red-800"
-                }`}
+                className={`mt-4 p-4 rounded-md ${verificationResult.success ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
               >
                 {verificationResult.success ? (
                   <>
                     <h3 className="flex items-center text-lg font-semibold mb-2">
                       <CheckCircle className="mr-2" /> Verification Successful!
                     </h3>
-                    <p>Score is above threshold.</p>
+                    <p>CGPA is above threshold.</p>
                     <small>Verification Hash: {verificationResult.verificationHash}</small>
                   </>
                 ) : (
@@ -134,6 +245,7 @@ export default function RecruiterVerifyPageContent() {
                   <div key={index} className="bg-green-100 text-green-800 p-4 rounded-md mb-2">
                     <p>Student ID: {v.studentId}</p>
                     <p>Verified: {new Date(v.timestamp).toLocaleString()}</p>
+                    <p>Network: {v.network}</p>
                   </div>
                 ))}
               </div>
@@ -144,3 +256,4 @@ export default function RecruiterVerifyPageContent() {
     </div>
   )
 }
+

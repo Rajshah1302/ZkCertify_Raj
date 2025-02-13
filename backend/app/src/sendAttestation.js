@@ -7,7 +7,7 @@ const NETWORKS = {
         CONTRACT_ADDRESS: "0x82C20Bd680dDE5789F6A4420a4131C69CEA7b8EA" // Your Arbitrum contract
     },
     EDUCHAIN: {
-        RPC_URL: "https://rpc-testnet.educhain.io", // EDUCHAIN doesn't use Infura
+        RPC_URL: "https://rpc.open-campus-codex.gelato.digital", // EDUCHAIN doesn't use Infura
         CONTRACT_ADDRESS: "0x2fe6BF8E5c9A6aC76b91C340f1bC42e3799e2358" // Your EDUCHAIN contract
     }
 };
