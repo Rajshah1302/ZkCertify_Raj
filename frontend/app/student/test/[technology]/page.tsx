@@ -44,7 +44,7 @@ export default function TestPage() {
   const fetchTest = async () => {
     try {
       setLoading(true);
-      const response = await axios.post("https://zkcertify-backend.onrender.com//test/generate", {
+      const response = await axios.post("https://zkcertify-backend.onrender.com/test/generate", {
         technology,
       });
       if (response.data.success) {
