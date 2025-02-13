@@ -33,7 +33,7 @@ export default function RecruiterVerifyPageContent() {
     setIsVerifying(true)
     setVerificationResult(null)
     try {
-      const response = await fetch(`${backendURL}/recruiter/verify`, {
+      const response = await fetch(`${backendURL}/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ studentId }),
