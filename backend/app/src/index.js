@@ -17,7 +17,7 @@ app.use(cors({
   methods: ["GET", "POST"],
   allowedHeaders: ["Content-Type"],
 }));
-
+app.get("/", (req, res) => res.send("Hello from Express on Vercel!"));
 app.use("/verify", verifyRoutes);
 app.use("/verifications", historyRoutes);
 app.use("/threshold", configRoutes);
