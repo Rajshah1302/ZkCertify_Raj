@@ -70,7 +70,7 @@ export default function RecruiterDashboard() {
                 </div>
                 <div className="ml-auto">
                   <Link
-                    href={`/recuriter/verify?studentId=${student.id}`}
+                    href={`/recruiter/verify?studentId=${student.id}`}
                     passHref
                   >
                     <Button variant="outline">Verify Profile</Button>
