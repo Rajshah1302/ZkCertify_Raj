@@ -10,12 +10,9 @@ require("dotenv").config({ path: ".env" });
 require("dotenv").config({ path: ".env.secrets" });
 
 async function verify(proof, publicSignals) {
-  const ZKV_RPC_URL = "wss://testnet-rpc.zkverify.io";
-  const ETH_RPC_URL = "https://ethereum-sepolia-rpc.publicnode.com";
-  const ETH_ZKVERIFY_CONTRACT_ADDRESS = "0x2C0d06342BA9c7FD7BE164A6eE73beBACeDb6dF4";
-  const ETH_SCORE_CONTRACT_ADDRESS = "0x74454b0FfEC66F3796F0bCA41d41112F0126643e";
-  const ZKV_SEED_PHRASE = "winner stamp fabric because gallery embody oyster achieve resemble bullet business fee";
-  const ETH_SECRET_KEY = "0xc5bbc52585e112afddbd3cdc271e8c87c4a959e4a24994d7f9438a859edea9d0";
+  const ETH_RPC_URL = process.env.ETH_RPC_URL;
+  const ZKV_SEED_PHRASE = process.env.ZKV_SEED_PHRASE;
+  const ETH_SECRET_KEY = process.env.ETH_SECRET_KEY;
 
   try {
     if (publicSignals[1] === "0") {
