@@ -49,7 +49,13 @@ The core idea behind **ZKCertify** is to create a transparent yet privacy-preser
 https://youtu.be/YG1DjKzlmFQ  
 
 **Screenshots:**  
-
+![image](https://github.com/user-attachments/assets/f2da6a85-c299-48d8-970d-8c33a69ff07c)
+![image](https://github.com/user-attachments/assets/bfd08cda-6a1c-4202-a02a-efa206582556)
+![image](https://github.com/user-attachments/assets/5b969f9b-6c0a-4505-a864-8dcedb614e1c)
+![image](https://github.com/user-attachments/assets/05cadecb-23a3-4253-a885-9e965b092425)
+![image](https://github.com/user-attachments/assets/f8d99b82-a0e4-418f-b3aa-072f53e6944e)
+![image](https://github.com/user-attachments/assets/cae80960-b87a-42f3-b11a-26a24d615ee0)
+![image](https://github.com/user-attachments/assets/52a3679e-93f4-4d1a-afab-bb72b008e29b)
 
 ---
 
@@ -83,7 +89,7 @@ Below is a high-level architecture diagram illustrating the major components and
 
 1. **Clone the Repository**  
    ```bash
-   git clone https://github.com/<YourUserName>/ZKCertify.git
+   git clone https://github.com/bansalayush2407/ZKCertify.git
    cd ZKCertify
    ```
 
