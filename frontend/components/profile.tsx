@@ -99,7 +99,7 @@ export function ProfilePage() {
       };
 
       // Request the PDF from the backend endpoint with user data
-      const response = await axios.get("http://localhost:4000/certificate/generate", {
+      const response = await axios.get("https://zkcertify-backend.onrender.com//certificate/generate", {
         params: userDetails,
         responseType: "blob",
       });
