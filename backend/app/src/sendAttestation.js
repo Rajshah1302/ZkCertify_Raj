@@ -44,7 +44,7 @@ async function sendAttestation(attestationData, networkChoice) {
             BigInt(attestationData.numberOfLeaves),
             BigInt(attestationData.leafIndex),
             networkChoice === 'EDUCHAIN' ? 0 : 1,
-            "ipfs://metadata"  // Replace with actual metadata URI
+            "ipfs://bafybeidbe3l3uje46x7goznkhtqsz7ivew4yf466eu3tlir7opq37s4goq"
         );
 
         console.log(`Transaction sent on ${networkChoice}:`, tx.hash);

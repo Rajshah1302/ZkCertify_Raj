@@ -1,11 +1,11 @@
 {
-  "root": "0x53de85e897f26ad4bd95054afc4f73785ab7e3c9fac6fd2b760a8f1f5d661fe8",
+  "root": "0xb89d243bec2683fccbb99e3a4453f9633b94cea2c9b48875dcc421c0bdf5cfda",
   "proof": [
-    "0xc98ef1ce55c5bf89b340d2501e4cacee3bc11a5fb98edd856136ea71a06d12c1",
-    "0xd5e3d0633aede7911e25764f33009d65da86e9b4e4609bf437006c0824b94308"
+    "0xc53662931b03a35d2f4f78074307d65aae00fa993ea12496aa330cc51f35027e",
+    "0xf4f429571b9902a9c4b0a0d059b949b5bdf63910f28914eb304470f270efb61d"
   ],
   "numberOfLeaves": 4,
   "leafIndex": 1,
   "leaf": "0x9df3ac81a0fe19c5f2cbb84d2f50f78913f80b453715224c2a3ad328885fdc1a",
-  "attestationId": 44058
+  "attestationId": 44078
 }
