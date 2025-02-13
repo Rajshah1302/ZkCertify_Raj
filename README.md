@@ -1,11 +1,13 @@
----
-
+```markdown
 # ZKCertify
 
-This repository contains a **ZK-based** verification system that enables the generation and validation of attestations across multiple chains (EDUCHAIN and Arbitrum). The system also demonstrates how user data (like CGPA, test score) can be verified and minted into an NFT on the chosen chain.
+This repository contains a **ZK-based** verification system that enables the generation and validation of attestations across multiple chains (**EDUCHAIN** and **Arbitrum**). The system demonstrates how user data (like CGPA, test score) can be verified and minted into an NFT on the chosen chain.
+
+---
 
 ## Table of Contents
 - [Overview](#overview)
+- [Core Idea](#core-idea)
 - [Demo](#demo)
 - [Architecture](#architecture)
 - [Prerequisites](#prerequisites)
@@ -13,21 +15,34 @@ This repository contains a **ZK-based** verification system that enables the gen
 - [Environment Variables](#environment-variables)
 - [Running Locally](#running-locally)
 - [Usage](#usage)
+- [Future Plans](#future-plans)
 - [License](#license)
 
 ---
 
 ## Overview
-ZKVerify leverages **zero-knowledge proofs** to ensure the integrity of user data without exposing the underlying information. It allows recruiters or other parties to:
+**ZKCertify** leverages **zero-knowledge proofs** to ensure the integrity of user data without exposing the underlying information. It allows recruiters or other parties to:
 1. Request verification of a user's credentials (CGPA, test scores).
 2. Generate and validate ZK proofs.
-3. Mint an NFT as proof of verification on the selected chain.
+3. Mint an NFT as proof of verification on the selected chain (Arbitrum or EDUCHAIN).
+
+---
+
+## Core Idea
+1. A **student** registers on the platform and stores their **CGPA**.
+2. As the student learns new skills, they can take various **tests** (e.g., skill-based tests).  
+3. The system checks if **CGPA + test score** is greater than a defined **threshold**.  
+   - If **CGPA + test score ≥ threshold**, the output is **1** (passed).  
+   - Otherwise, the output is **0** (not passed).  
+4. **Recruiters** can verify these proofs on-chain whenever a student applies for a role.
+
+This approach preserves the student’s privacy (thanks to zero-knowledge proofs) while still allowing recruiters to validate the student’s performance.
 
 ---
 
 ## Demo
 **Video Demo:**  
-_A link to your recorded demo video goes here._  
+_A link to your recorded demo video goes here._
 
 **Screenshots:**  
 _Attach or embed relevant screenshots of your website or application interface._
@@ -58,21 +73,22 @@ Below is a high-level architecture diagram illustrating the major components and
 ---
 
 ## Installation
+
 1. **Clone the Repository**  
    ```bash
-   git clone https://github.com/<YourUserName>/ZKVerify.git
-   cd ZKVerify
+   git clone https://github.com/<YourUserName>/ZKCertify.git
+   cd ZKCertify
    ```
 
 2. **Install Dependencies**  
-   - Backend:
+   - **Backend**:
      ```bash
      cd backend
      npm install
      ```
-   - Frontend:
+   - **Frontend**:
      ```bash
-     cd frontend
+     cd ../frontend
      npm install
      ```
 
@@ -114,7 +130,7 @@ ETH_SECRET_KEY=
 ARB_URL=
 EDU_URL=
 ```
-- **ZKV_RPC_URL**: The RPC endpoint for ZKV.
+- **ZKV_RPC_URL**: The RPC endpoint for ZKV (if applicable).
 - **ETH_RPC_URL**: The RPC endpoint for Ethereum (or your desired testnet).
 - **ETH_ZKVERIFY_CONTRACT_ADDRESS**: Address of the ZKVerify contract on Ethereum (if applicable).
 - **ARB_ZKCERTIFY_CONTRACT_ADDRESS**: Address of the contract deployed on Arbitrum.
@@ -128,6 +144,7 @@ EDU_URL=
 ---
 
 ## Running Locally
+
 1. **Backend**  
    - Navigate to the backend directory:
      ```bash
@@ -141,7 +158,7 @@ EDU_URL=
      ```bash
      node app/src/index.js
      ```
-   The backend should now be running on the specified port (default is usually `http://localhost:3001` or whichever is set in your code).
+   The backend should now be running on the specified port (default is usually `http://localhost:3001`).
 
 2. **Frontend**  
    - Open a new terminal window and navigate to the frontend directory:
@@ -156,16 +173,24 @@ EDU_URL=
      ```bash
      npm run dev
      ```
-   By default, this starts on `http://localhost:3000` (or the next available port).
+   By default, this starts on `http://localhost:3000`.
 
 ---
 
 ## Usage
+
 1. **Connect Wallet** (e.g., MetaMask) on the website.  
-2. **Add CGPA / Take Test** to generate or update your user data.  
-3. **Generate Proof** which uses the underlying **ZK circuit** to prove your credentials.  
+2. **Register / Add CGPA / Take Test** to generate or update your user data.  
+3. **Generate Proof** which uses the underlying **ZK circuit** to prove your credentials (CGPA + Test Score).  
 4. **Select a Chain** (Arbitrum or EDUCHAIN) to mint the verification NFT.  
-5. **Recruiters** can connect their wallets to verify your credentials and see proof on-chain.
+5. **Recruiters** can connect their wallets to verify your credentials and see proof on-chain.  
+
+---
+
+## Future Plans
+- **Additional Tests**: DSA, Assignments, Interviews, automatically checked by AI.  
+- **Job Postings**: Recruiters can post openings with required skills, and the platform can suggest suitable students.  
+- **Resume as NFT**: Students can mint their verified resume as an NFT on the chain of their choice.  
 
 ---
 
@@ -174,7 +199,5 @@ _Include your preferred license here (e.g., MIT, Apache 2.0)_
 
 ---
 
-### Questions or Feedback?
-If you have any questions or suggestions, please open an issue or submit a pull request.
-
-Enjoy building with **ZKVerify**!
+**Happy Building!** If you have any questions or suggestions, feel free to open an issue or submit a pull request.
+```
