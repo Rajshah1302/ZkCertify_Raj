@@ -1,18 +1,20 @@
 const { ethers } = require("ethers");
 
-// Network configurations with Infura
+require("dotenv").config({ path: ".env" });
+require("dotenv").config({ path: ".env.secrets" });
+
 const NETWORKS = {
     Arbitrum: {
-        RPC_URL: "https://sepolia.infura.io/v3/8bc20953225e4a40a8130f1d54c7e5ec",  // Your Infura URL
-        CONTRACT_ADDRESS: "0x82C20Bd680dDE5789F6A4420a4131C69CEA7b8EA" // Your Arbitrum contract
+        RPC_URL: process.env.ARB_URL,  // Your Infura URL
+        CONTRACT_ADDRESS:process.env.ARB_ZKCERTIFY_CONTRACT_ADDRESS  // Your Arbitrum contract
     },
     EDUCHAIN: {
-        RPC_URL: "https://rpc.open-campus-codex.gelato.digital",
-        CONTRACT_ADDRESS: "0x2fe6BF8E5c9A6aC76b91C340f1bC42e3799e2358" // Your EDUCHAIN contract
+        RPC_URL: process.env.EDU_URL,  // Your EDUCHAIN URL
+        CONTRACT_ADDRESS: process.env.EDU_ZKCERTIFY_CONTRACT_ADDRESS // Your EDUCHAIN contract
     }
 };
 
-const ETH_SECRET_KEY = "0xc5bbc52585e112afddbd3cdc271e8c87c4a959e4a24994d7f9438a859edea9d0";
+const ETH_SECRET_KEY = process.env.ETH_SECRET_KEY;
 
 // Updated ABI to include the mintNFT function
 const ZkCerifyABI = [
@@ -46,8 +48,12 @@ async function sendAttestation(attestationData, networkChoice) {
             networkChoice === 'EDUCHAIN' ? 0 : 1,
             "ipfs://bafybeidbe3l3uje46x7goznkhtqsz7ivew4yf466eu3tlir7opq37s4goq"
         );
-
-        console.log(`Transaction sent on ${networkChoice}:`, tx.hash);
+        if(networkChoice === 'EDUCHAIN') {
+            console.log(`Transaction sent on ${networkChoice}: https://edu-chain-testnet.blockscout.com/tx/${tx.hash}`);
+        }
+        else {
+            console.log(`Transaction sent on ${networkChoice}: https://sepolia.etherscan.io/tx/${tx.hash}`);
+        }
         const receipt = await tx.wait();
         console.log("Transaction confirmed in block:", receipt.blockNumber);
 
