@@ -21,11 +21,11 @@ import {
   Plus,
 } from "lucide-react";
 import axios from "axios";
+import { useWeb3 } from "@/providers/web3-provider";
 
-// Default values in case nothing is stored yet.
+// const {account} = useWeb3();
 const defaultUser = {
   name: "Anonymous User",
-  wallet: "0x720f...698b",
   bio: "",
   email: "",
   github: "",
@@ -34,7 +34,6 @@ const defaultUser = {
 };
 
 export function ProfilePage() {
-  // Lazy initialization for user state from localStorage
   const [user, setUser] = useState(() => {
     if (typeof window !== "undefined") {
       const storedUser = localStorage.getItem("profileUser");
@@ -43,7 +42,6 @@ export function ProfilePage() {
     return defaultUser;
   });
 
-  // Lazy initialization for skills state from localStorage
   const [skills, setSkills] = useState<string[]>(() => {
     if (typeof window !== "undefined") {
       const storedSkills = localStorage.getItem("profileSkills");
@@ -131,7 +129,6 @@ export function ProfilePage() {
           <div className="ml-36 flex justify-between items-center">
             <div>
               <h1 className="text-2xl font-bold">{user.name}</h1>
-              <p className="text-muted-foreground">{user.wallet}</p>
             </div>
             <Button onClick={handleEditClick}>
               <Edit className="mr-2 h-4 w-4" />
